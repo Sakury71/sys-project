@@ -1,6 +1,10 @@
 package com.sakury.config;
 
 import com.sakury.entity.RestBean;
+import com.sakury.entity.vo.response.AuthorizeVO;
+import com.sakury.filter.JwtAuthorizeFilter;
+import com.sakury.utils.JwtUtils;
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
@@ -10,7 +14,9 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
 
@@ -21,6 +27,10 @@ import java.io.IOException;
  */
 @Configuration
 public class SecurityConfiguration {
+    @Resource
+    JwtUtils utils;
+    @Resource
+    JwtAuthorizeFilter jwtAuthorizeFilter;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
@@ -41,6 +51,7 @@ public class SecurityConfiguration {
                 .sessionManagement(conf -> conf
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
+                .addFilterBefore(jwtAuthorizeFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
@@ -54,7 +65,14 @@ public class SecurityConfiguration {
                                          Authentication authentication) throws IOException {
         httpServletResponse.setContentType("application/json");
         httpServletResponse.setCharacterEncoding("UTF-8");
-        httpServletResponse.getWriter().write(RestBean.success().asJsonString());
+        User user = (User) authentication.getPrincipal();
+        String token = utils.createJwt(user,1,"张帅");
+        AuthorizeVO vo = new AuthorizeVO();
+        vo.setExpire(utils.expireTime());
+        vo.setRole("");
+        vo.setToken(token);
+        vo.setUsername("张帅");
+        httpServletResponse.getWriter().write(RestBean.success(vo).asJsonString());
     }
 
     private void onAuthenticationFailure(HttpServletRequest httpServletRequest,
