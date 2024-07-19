@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -47,6 +48,10 @@ public class SecurityConfiguration {
                         .logoutUrl("/api/auth/logout")
                         .logoutSuccessHandler(this::onLogoutSuccess)
                 )
+                .exceptionHandling(conf -> conf
+                        .authenticationEntryPoint(this::onUnauthorized)
+                        .accessDeniedHandler(this::onAccessDeny)
+                )
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(conf -> conf
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -55,9 +60,26 @@ public class SecurityConfiguration {
                 .build();
     }
 
+    private void onAccessDeny(HttpServletRequest httpServletRequest,
+                              HttpServletResponse httpServletResponse,
+                              AccessDeniedException e) throws IOException {
+        httpServletResponse.setContentType("application/json");
+        httpServletResponse.setCharacterEncoding("UTF-8");
+        httpServletResponse.getWriter().write(RestBean.forbidden(e.getMessage()).asJsonString());
+    }
+
+    private void onUnauthorized(HttpServletRequest httpServletRequest,
+                                HttpServletResponse httpServletResponse,
+                                AuthenticationException e) throws IOException {
+        httpServletResponse.setContentType("application/json");
+        httpServletResponse.setCharacterEncoding("UTF-8");
+        httpServletResponse.getWriter().write(RestBean.unauthorized(e.getMessage()).asJsonString());
+    }
+
     private void onLogoutSuccess(HttpServletRequest httpServletRequest,
                                  HttpServletResponse httpServletResponse,
                                  Authentication authentication) {
+
     }
 
     private void onAuthenticationSuccess(HttpServletRequest httpServletRequest,
