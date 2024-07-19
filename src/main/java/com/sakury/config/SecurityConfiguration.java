@@ -20,6 +20,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  * @author Zhang
@@ -32,6 +33,7 @@ public class SecurityConfiguration {
     JwtUtils utils;
     @Resource
     JwtAuthorizeFilter jwtAuthorizeFilter;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
@@ -60,35 +62,13 @@ public class SecurityConfiguration {
                 .build();
     }
 
-    private void onAccessDeny(HttpServletRequest httpServletRequest,
-                              HttpServletResponse httpServletResponse,
-                              AccessDeniedException e) throws IOException {
-        httpServletResponse.setContentType("application/json");
-        httpServletResponse.setCharacterEncoding("UTF-8");
-        httpServletResponse.getWriter().write(RestBean.forbidden(e.getMessage()).asJsonString());
-    }
-
-    private void onUnauthorized(HttpServletRequest httpServletRequest,
-                                HttpServletResponse httpServletResponse,
-                                AuthenticationException e) throws IOException {
-        httpServletResponse.setContentType("application/json");
-        httpServletResponse.setCharacterEncoding("UTF-8");
-        httpServletResponse.getWriter().write(RestBean.unauthorized(e.getMessage()).asJsonString());
-    }
-
-    private void onLogoutSuccess(HttpServletRequest httpServletRequest,
-                                 HttpServletResponse httpServletResponse,
-                                 Authentication authentication) {
-
-    }
-
-    private void onAuthenticationSuccess(HttpServletRequest httpServletRequest,
+    public void onAuthenticationSuccess(HttpServletRequest httpServletRequest,
                                          HttpServletResponse httpServletResponse,
                                          Authentication authentication) throws IOException {
         httpServletResponse.setContentType("application/json");
         httpServletResponse.setCharacterEncoding("UTF-8");
         User user = (User) authentication.getPrincipal();
-        String token = utils.createJwt(user,1,"张帅");
+        String token = utils.createJwt(user, 1, "张帅");
         AuthorizeVO vo = new AuthorizeVO();
         vo.setExpire(utils.expireTime());
         vo.setRole("");
@@ -97,12 +77,49 @@ public class SecurityConfiguration {
         httpServletResponse.getWriter().write(RestBean.success(vo).asJsonString());
     }
 
-    private void onAuthenticationFailure(HttpServletRequest httpServletRequest,
+    public void onLogoutSuccess(HttpServletRequest httpServletRequest,
+                                 HttpServletResponse httpServletResponse,
+                                 Authentication authentication) throws IOException {
+        httpServletResponse.setContentType("application/json");
+        httpServletResponse.setCharacterEncoding("UTF-8");
+        PrintWriter writer = httpServletResponse.getWriter();
+        String authorization = httpServletRequest.getHeader("Authorization");
+        if (utils.invalidateJwt(authorization)) {
+            writer.write(RestBean.success().asJsonString());
+        } else {
+            writer.write(RestBean.failure(400, "退出登录失败！").asJsonString());
+        }
+    }
+
+    public void onAuthenticationFailure(HttpServletRequest httpServletRequest,
                                          HttpServletResponse httpServletResponse,
                                          AuthenticationException e) throws IOException {
         httpServletResponse.setContentType("application/json");
         httpServletResponse.setCharacterEncoding("UTF-8");
-        httpServletResponse.getWriter().write(RestBean.failure(401, e.getMessage()).asJsonString());
+        httpServletResponse.getWriter().write(RestBean.unauthorized(e.getMessage()).asJsonString());
+    }
+
+
+    public void onAccessDeny(HttpServletRequest httpServletRequest,
+                              HttpServletResponse httpServletResponse,
+                              AccessDeniedException e) throws IOException {
+        httpServletResponse.setContentType("application/json");
+        httpServletResponse.setCharacterEncoding("UTF-8");
+        httpServletResponse.getWriter().write(RestBean.forbidden(e.getMessage()).asJsonString());
+    }
+
+    public void onUnauthorized(HttpServletRequest httpServletRequest,
+                                HttpServletResponse httpServletResponse,
+                                AuthenticationException e) throws IOException {
+        httpServletResponse.setContentType("application/json");
+        httpServletResponse.setCharacterEncoding("UTF-8");
+        httpServletResponse.getWriter().write(RestBean.unauthorized(e.getMessage()).asJsonString());
+
     }
 }
+
+
+
+
+
 
