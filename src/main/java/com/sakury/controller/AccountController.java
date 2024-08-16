@@ -5,16 +5,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * @author Zhang
- * @package com.sakury.controller
- * @date 2024/7/19 19:48
+ * Author: Sakury
+ * Date: 2024/8/15 20:07
+ * Version: 1.0
+ * Description:
  */
-@RestController
-@RequestMapping("/api/test")
-public class TestController {
-    @GetMapping("/hello")
-    public String test() {
-        return "Hello World!";
-    }
 
+@RestController
+@RequestMapping("/account")
+public class AccountController {
+    @GetMapping("/test")
+    public void test(){
+
+    }
 }

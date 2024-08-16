@@ -2,6 +2,7 @@ package com.sakury.entity.vo.response;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -13,7 +14,7 @@ import java.util.Date;
 //方便对属性进行访问和设置
 //该类用于封装授权信息，可以在权限验证过程中传递和使用
 @Data
-public class AuthorizeVO {
+public class AuthorizeVO implements Serializable {
     String username;
     String role;
     String token;

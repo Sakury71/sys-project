@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sakury.mapper.DataBaseMapper">
+    <resultMap id="BaseResultMap" type="com.sakury.entity.dto.DataBase">
+        <id property="id" column="id" jdbcType="INTEGER" />
+        <result property="name" column="name" jdbcType="VARCHAR" />
+        <result property="year" column="year" jdbcType="VARCHAR" />
+        <result property="location" column="location" jdbcType="VARCHAR" />
+        <result property="type" column="type" jdbcType="VARCHAR" />
+        <result property="details" column="details" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <select id="selectAllByLocationOrderById" resultMap="BaseResultMap">
+        select
+            *
+        from db_database
+        where
+            location LIKE CONCAT('%', #{location}, '%')
+        order by id
+    </select>
+</mapper>

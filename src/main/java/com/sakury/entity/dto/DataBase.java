@@ -7,22 +7,22 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
- * @author Zhang
- * @package com.sakury.entity.dto
- * @date 2024/7/20 8:05
+ * Author: Sakury
+ * Date: 2024/8/15 18:19
+ * Version: 1.0
+ * Description:
  */
 @Data
-@TableName("db_account")
+@TableName("db_database")
 @AllArgsConstructor
-public class Account implements Serializable {
+public class DataBase implements Serializable {
     @TableId(type = IdType.AUTO)
-    Integer id;
-    String username;
-    String password;
-    String email;
-    String role;
-    Date registerTime;
+    private Integer id;
+    private String name;
+    private String year;
+    private String location;
+    private String type;
+    private String details;
 }
