@@ -19,4 +19,7 @@
             location LIKE CONCAT('%', #{location}, '%')
         order by id
     </select>
+    <select id="selectAllByName" resultType="com.sakury.entity.dto.DataBase">
+        select * from db_database where name like concat('%',#{name},'%')
+    </select>
 </mapper>

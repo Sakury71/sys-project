@@ -18,4 +18,5 @@ public interface DataBaseMapper extends BaseMapper<DataBase> {
 
     List<DataBase> selectAllByLocationOrderById(@Param("location") String location);
 
+    List<DataBase> selectAllByName(@Param("name") String name);
 }

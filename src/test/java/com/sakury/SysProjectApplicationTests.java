@@ -26,4 +26,11 @@ class SysProjectApplicationTests {
             System.out.println(data);
         }
     }
+    @Test
+    void test2() {
+        List<DataBase> dataBases = dataBaseMapper.selectAllByName("梁祝传说");
+        for (DataBase data : dataBases) {
+            System.out.println(data);
+        }
+    }
 }

@@ -25,4 +25,9 @@ public class DataBaseServiceImpl implements DataBaseService {
     public List<DataBase> selectAllByLocationOrderById(String location) {
         return dataBaseMapper.selectAllByLocationOrderById(location);
     }
+
+    @Override
+    public List<DataBase> selectAllByName(String name) {
+        return dataBaseMapper.selectAllByName(name);
+    }
 }

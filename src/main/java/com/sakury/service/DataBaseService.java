@@ -12,4 +12,6 @@ import java.util.List;
  */
 public interface DataBaseService {
     List<DataBase> selectAllByLocationOrderById(String location);
+
+    List<DataBase> selectAllByName(String name);
 }
