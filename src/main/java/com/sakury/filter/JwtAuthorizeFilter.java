@@ -30,6 +30,11 @@ public class JwtAuthorizeFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+        String path = request.getRequestURI();
+        if (path.startsWith("/api/auth/") || path.startsWith("/proxy/")) {
+            filterChain.doFilter(request, response); // 放行这些路径
+            return;
+        }
         String authorization = request.getHeader("Authorization");
         DecodedJWT jwt = utils.resolveJwt(authorization);
         if (jwt != null) {
