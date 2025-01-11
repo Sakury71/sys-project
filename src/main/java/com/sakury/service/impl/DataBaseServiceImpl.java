@@ -16,11 +16,8 @@ import java.util.List;
  */
 @Service
 public class DataBaseServiceImpl implements DataBaseService {
-
     @Autowired
     DataBaseMapper dataBaseMapper;
-
-
     @Override
     public List<DataBase> selectAllByLocationOrderById(String location) {
         return dataBaseMapper.selectAllByLocationOrderById(location);
